@@ -44,13 +44,9 @@ public class Chaser : EnemyMovement
 
     protected override void XCollisionEnter(Collider2D collision)
     {
-
-        
         if (myChaserCollider.IsTouching(player.GetComponent<PlayerController2D>().enemyDetectionColliderObject.GetComponent<BoxCollider2D>())/* && collision.gameObject.tag == "EnemyDetectsPlayer"*/)
         {
             playerDetected = true;
-
-            GameObject player = collision.transform.parent.gameObject;
             PlayerController2D playerScript = player.GetComponent<PlayerController2D>();
             if (playerScript.isAlive)
             {
