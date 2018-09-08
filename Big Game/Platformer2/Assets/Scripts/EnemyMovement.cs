@@ -74,8 +74,6 @@ public class EnemyMovement : MonoBehaviour {
         }
             
 
-        //Perform the special enemy quality
-        //Special();
     }
 
     protected virtual void XCollisionEnter(Collider2D collision)
