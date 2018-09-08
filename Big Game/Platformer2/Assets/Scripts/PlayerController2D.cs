@@ -30,6 +30,8 @@ public class PlayerController2D : MonoBehaviour {
         // Public 
         public GameObject bodyColliderObject;
         public GameObject feetColliderObject;
+        public GameObject enemyDetectionColliderObject;
+
 
         // Private
         private Rigidbody2D myRigidBody;

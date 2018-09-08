@@ -7,7 +7,7 @@ public class Chaser : EnemyMovement
     [Header("Chaser Info")]
     public GameObject ChaserColliderObject;
     private BoxCollider2D myChaserCollider;
-    //public GameObject player;
+    public GameObject player;
     //public float chasingDistance;
     public float extraSpeed;
     protected override void XStart()
@@ -45,8 +45,8 @@ public class Chaser : EnemyMovement
     protected override void XCollisionEnter(Collider2D collision)
     {
 
-
-        if (myChaserCollider.IsTouchingLayers(LayerMask.GetMask("Player")) && collision.gameObject.tag == "EnemyDetectsPlayer")
+        
+        if (myChaserCollider.IsTouching(player.GetComponent<PlayerController2D>().enemyDetectionColliderObject.GetComponent<BoxCollider2D>())/* && collision.gameObject.tag == "EnemyDetectsPlayer"*/)
         {
             playerDetected = true;
 
