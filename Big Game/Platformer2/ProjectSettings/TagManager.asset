@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - EnemyDetectsPlayer
+  - Enemy
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Background
+  - BackParallax1
+  - BackParallax2
+  - BackParallax3
+  - Ground
+  - Enemy
+  - Player
+  - ForwardParallax3
+  - ForwardParallax2
+  - ForwardParallax1
+  - CameraCollider
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 445786371
+    locked: 0
+  - name: BackParallax1
+    uniqueID: 3048704369
+    locked: 0
+  - name: BackParallax2
+    uniqueID: 4009008595
+    locked: 0
+  - name: BackParallax3
+    uniqueID: 1969365707
+    locked: 0
+  - name: Ground
+    uniqueID: 2013859703
+    locked: 0
+  - name: Enemy
+    uniqueID: 2303978619
+    locked: 0
+  - name: Player
+    uniqueID: 43182393
+    locked: 0
+  - name: ForwardParallax1
+    uniqueID: 53397799
+    locked: 0
+  - name: ForwardParallax2
+    uniqueID: 1804117339
+    locked: 0
+  - name: ForwardParallax3
+    uniqueID: 1748754245
+    locked: 0
