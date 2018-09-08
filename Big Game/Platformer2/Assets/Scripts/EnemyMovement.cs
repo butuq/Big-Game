@@ -80,10 +80,12 @@ public class EnemyMovement : MonoBehaviour {
     {
 
     }
+
     protected virtual void XStart()
     {
 
     }
+
     private void Flip()
     {
         currentDirection = -currentDirection;
