@@ -7,7 +7,6 @@ public class PlayerController2D : MonoBehaviour {
         public bool isAlive;
         public float normalSpeed; // eventually should be private
         public float jumpSpeed; // eventually should be private
-        public float jumpSpeedLostWhenReleasing;
         public float currentHealth; // eventually should be private
         public float totalHealth;
         public float knockbackTimer;
@@ -73,7 +72,8 @@ public class PlayerController2D : MonoBehaviour {
 
     private void Run()
     {
-        float playerInput = Input.GetAxis("Horizontal");
+        float playerInput = Input.GetAxisRaw("Horizontal");
+        Debug.Log(playerInput);
         Vector2 playerVelocity = new Vector2(playerInput * normalSpeed, myRigidBody.velocity.y);
         myRigidBody.velocity = playerVelocity;
     }
@@ -82,7 +82,7 @@ public class PlayerController2D : MonoBehaviour {
     {
         if (Input.GetButtonUp("Jump") && currentState == CurrentState.Jumping)
         {
-            myRigidBody.velocity = new Vector2(myRigidBody.velocity.x, jumpSpeedLostWhenReleasing * myRigidBody.velocity.y);
+            myRigidBody.velocity = new Vector2(myRigidBody.velocity.x, 0f);
         }
 
         // Change how this code works if you want double jump or more.
