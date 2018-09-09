@@ -3,15 +3,23 @@
 public class PlayerController2D : MonoBehaviour {
 
     // C# variables
-        // Public
-        public bool isAlive;
-        public float normalSpeed; // eventually should be private
-        public float jumpSpeed; // eventually should be private
-        public float jumpSpeedLostWhenReleasing;
-        public float currentHealth; // eventually should be private
-        public float totalHealth;
-        public float knockbackTimer;
-        public enum CurrentState // eventually should be private
+        // Enums
+        public enum CurrentMap
+        {
+            Neutral,
+            Air,
+            Fire,
+            Ice,
+            Earth,
+            Metal
+        }
+        public enum DashState
+        {
+            Ready,
+            Dashing,
+            Cooldown
+        }
+        public enum CurrentState
         {
             Idle,
             Running,
@@ -20,11 +28,35 @@ public class PlayerController2D : MonoBehaviour {
             LookingUp,
             LookingDown,
             Dead,
-            Knockback
+            Knockback,
+            Dashing
         }
-        public CurrentState currentState; // eventually should be private
+
+        // Public
+        public bool canDoubleJump;
+        public bool canWallJump;
+        public bool canDash;
+        public bool isAlive;
+        public float normalSpeed; 
+        public float jumpSpeed; 
+        public float currentHealth; 
+        public float totalHealth;
+        public float knockbackTimer;
 
         // Private
+        private CurrentMap currentMap;
+        private CurrentState currentState;
+            // Variables for dash
+                private DashState dashState;
+                private Vector2 savedVelocity;
+                private float dashTimer;
+                [SerializeField] private float dashDuration;
+                [SerializeField] private float dashIntensity;
+            // Variables for double jump
+                private int jumpsAvailable;
+                private bool isJumping;
+                [SerializeField] private float jumpTime;
+                private float jumpTimeCounter;
 
     // Unity variables 
         // Public 
@@ -42,6 +74,8 @@ public class PlayerController2D : MonoBehaviour {
 
 	void Start ()
     {
+        currentMap = CurrentMap.Neutral;
+
         currentHealth = totalHealth;
         isAlive = true;
         myFeetCollider = feetColliderObject.GetComponent<BoxCollider2D>();
@@ -54,6 +88,7 @@ public class PlayerController2D : MonoBehaviour {
     {
         if (!isAlive)
         {
+            myRigidBody.velocity = Vector2.zero;
             currentState = CurrentState.Dead;
             return;
         }
@@ -67,35 +102,108 @@ public class PlayerController2D : MonoBehaviour {
 
         Run();
         Jump();
+        Dash();
         FlipSprite();
         StateMachine();
 	}
 
     private void Run()
     {
-        float playerInput = Input.GetAxis("Horizontal");
-        Vector2 playerVelocity = new Vector2(playerInput * normalSpeed, myRigidBody.velocity.y);
-        myRigidBody.velocity = playerVelocity;
+        if (currentState != CurrentState.Dashing)
+        {
+            float playerInput = Input.GetAxisRaw("Horizontal");
+            Vector2 playerVelocity = new Vector2(playerInput * normalSpeed, myRigidBody.velocity.y);
+            myRigidBody.velocity = playerVelocity;
+        }
     }
 
     private void Jump()
-    {
-        if (Input.GetButtonUp("Jump") && currentState == CurrentState.Jumping)
+    {        
+        bool isGrounded = myFeetCollider.IsTouchingLayers(LayerMask.GetMask("Ground"));
+        
+        if (isGrounded)
+            jumpsAvailable = 2;
+
+        if (jumpsAvailable > 0 && Input.GetButtonDown("Jump"))
         {
-            myRigidBody.velocity = new Vector2(myRigidBody.velocity.x, jumpSpeedLostWhenReleasing * myRigidBody.velocity.y);
+            jumpsAvailable--;
+            isJumping = true;
+            jumpTimeCounter = jumpTime;
+            myRigidBody.velocity = new Vector2(myRigidBody.velocity.x, jumpSpeed);
         }
 
-        // Change how this code works if you want double jump or more.
-        bool isGrounded = myFeetCollider.IsTouchingLayers(LayerMask.GetMask("Ground"));
-        if (!isGrounded)
+        if (Input.GetButton("Jump") && isJumping)
         {
-            return;
+            if (jumpTimeCounter > 0)
+            {
+                myRigidBody.velocity = new Vector2(myRigidBody.velocity.x, jumpSpeed);
+                jumpTimeCounter -= Time.deltaTime;
+            }
+            else
+            {
+                isJumping = false;
+            }
         }
-        
-        if (Input.GetButtonDown("Jump"))
+
+        if (Input.GetButtonUp("Jump"))
         {
-            Vector2 jumpVelocity = new Vector2(0f, jumpSpeed);
-            myRigidBody.velocity += jumpVelocity;
+            isJumping = false;
+        }
+    }
+
+    private void Dash()
+    {
+        if (canDash)
+        {
+            switch (currentMap)
+            {
+                case CurrentMap.Neutral:
+                    switch (dashState)
+                    {
+                        case DashState.Ready:
+                            bool isDashKeyDown = Input.GetButtonDown("Special1");
+                            if (isDashKeyDown)
+                            {
+                                savedVelocity = new Vector2(myRigidBody.velocity.x, 0f);
+                                myRigidBody.velocity = new Vector2(normalSpeed * this.transform.localScale.x * dashIntensity, 0f);
+                                myRigidBody.gravityScale = 0f;
+                                dashState = DashState.Dashing;
+                            }
+                            break;
+                        case DashState.Dashing:
+                            Debug.Log(myRigidBody.velocity);
+                            dashTimer += Time.deltaTime;
+                            if (dashTimer >= dashDuration)
+                            {
+                                dashTimer = dashDuration;
+                                myRigidBody.velocity = savedVelocity;
+                                myRigidBody.gravityScale = 1f;
+                                dashState = DashState.Cooldown;
+                            }
+                            break;
+                        case DashState.Cooldown:
+                            dashTimer -= Time.deltaTime;
+                            if (dashTimer <= 0)
+                            {
+                                dashTimer = 0;
+                                dashState = DashState.Ready;
+                            }
+                            break;
+                    }
+                    break;
+                case CurrentMap.Air:
+                    break;
+                case CurrentMap.Fire:
+                    break;
+                case CurrentMap.Ice:
+                    break;
+                case CurrentMap.Earth:
+                    break;
+                case CurrentMap.Metal:
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -110,6 +218,13 @@ public class PlayerController2D : MonoBehaviour {
 
     private void StateMachine()
     {
+        if (dashState == DashState.Dashing)
+        {
+            currentState = CurrentState.Dashing;
+            //myAnimator.SetBool("Dash", true);
+            return;
+        }
+
         if (myRigidBody.velocity == Vector2.zero)
         {
             currentState = CurrentState.Idle;
