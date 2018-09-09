@@ -53435,6 +53435,7 @@ Prefab:
         type: 2}
       propertyPath: m_Size.y
       value: 0.3
+      value: 0.4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f853fc3dd673feb40b45233974c4c455, type: 2}
